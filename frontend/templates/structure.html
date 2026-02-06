@@ -1,0 +1,144 @@
+<!-- frontend/templates/structure.html -->
+{% extends "base.html" %}
+
+{% block title %}Structure Version{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">Structure Version</h2>
+    <p class="page-description">Visualiza y carga versiones de metadata</p>
+</div>
+
+<div class="form-container">
+    <div class="form-header">
+        <h3>Metadata Version</h3>
+    </div>
+
+    <form id="structureForm" class="form-content">
+        <div class="form-group">
+            <label for="instanceId">ID de Instancia:</label>
+            <div class="search-row">
+                <input type="text" id="instanceId" class="search-input" placeholder="Ej: SF12321" required>
+                <button type="button" id="searchBtnHeader" class="btn-search">
+                    Buscar
+                </button>
+            </div>
+            <small class="form-hint">Ingresa el ID de la instancia de metadata</small>
+        </div>
+
+        <div class="form-group">
+            <label for="lastVersionCheck">
+                <input type="checkbox" id="lastVersionCheck" checked>
+                Última versión
+            </label>
+            <small class="form-hint">Si está marcado, se usará la versión más reciente</small>
+        </div>
+
+        <div class="form-group" id="versionGroup" style="display: none;">
+            <label for="versionSelect">Versión:</label>
+            <select id="versionSelect" class="search-input" disabled>
+                <option value="">Cargando versiones...</option>
+            </select>
+            <small class="form-hint">Selecciona una versión específica</small>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewSection" class="preview-section" style="display: none;">
+            <div class="preview-header">
+                <h4>Información de Metadata</h4>
+            </div>
+            <div class="preview-content">
+                <div class="preview-row">
+                    <span class="preview-label">ID:</span>
+                    <span id="previewId" class="preview-value">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Cliente:</span>
+                    <span id="previewCliente" class="preview-value">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Consultor:</span>
+                    <span id="previewConsultor" class="preview-value">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Fecha:</span>
+                    <span id="previewFecha" class="preview-value">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Versión:</span>
+                    <span id="previewVersion" class="preview-value">-</span>
+                </div>
+                <div class="preview-row full-width">
+                    <span class="preview-label">Ruta:</span>
+                    <span id="previewPath" class="preview-value path">-</span>
+                </div>
+            </div>
+
+
+
+            <!-- Golden Record Upload -->
+            <div class="form-group">
+                <label for="goldenRecordFile">Golden Record CSV:</label>
+                <input type="file" id="goldenRecordFile" class="file-input" accept=".csv">
+                <label for="goldenRecordFile" class="file-label">Seleccionar archivo CSV</label>
+                <span class="file-name" id="goldenRecordFileName">Ningún archivo seleccionado</span>
+                <small class="form-hint">Carga el Golden Record para esta versión</small>
+            </div>
+        </div>
+    </form>
+
+    <div class="form-footer">
+        <button type="button" id="loadBtn" class="btn btn-success" style="display: none;">
+            Validar Estructura
+        </button>
+    </div>
+</div>
+
+<div id="status" style="display: none; margin-top: 30px;"></div>
+<div id="result" style="display: none; margin-top: 20px;"></div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.search-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.btn-search {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 300;
+    cursor: pointer;
+    height: 48px; /* Igual que input height */
+    white-space: nowrap;
+    transition: background 0.3s;
+    min-width: 100px;
+}
+
+.btn-search:hover {
+    background: var(--color-primary-dark);
+}
+
+.form-hint {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+    font-size: 13px;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/structure.js"></script>
+{% endblock %}

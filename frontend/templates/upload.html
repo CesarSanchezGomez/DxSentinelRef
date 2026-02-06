@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Upload XML Files{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">Generar Golden Record</h2>
+    <p class="page-description">Sube y procesa tus SDM</p>
+</div>
+
+<!-- Contenedor principal con nueva estructura -->
+<div class="layout-container">
+    <!-- Fila superior: Información del proyecto -->
+    <div class="card horizontal-card">
+        <div class="card-header">
+            <h3>Información de la Instancia</h3>
+        </div>
+        <div class="card-body horizontal-body">
+            <div class="form-row">
+                <div class="form-group horizontal-group">
+                    <label for="id">Instancia ID:*</label>
+                    <input type="text" 
+                           id="id" 
+                           class="search-input" 
+                           required 
+                           placeholder="Instancia ID">
+                    <span class="form-helper">Identificador único de la instancia (obligatorio)</span>
+                </div>
+
+                <div class="form-group horizontal-group">
+                    <label for="cliente">Cliente:*</label>
+                    <input type="text" 
+                           id="cliente" 
+                           class="search-input" 
+                           required 
+                           placeholder="Nombre del cliente">
+                    <span class="form-helper">Empresa cliente (obligatorio)</span>
+                </div>
+
+                <div class="form-group horizontal-group">
+                    <label for="consultor">Consultor:*</label>
+                    <input type="text" 
+                           id="consultor" 
+                           class="search-input" 
+                           required 
+                           placeholder="Nombre del consultor">
+                    <span class="form-helper">Responsable del proyecto (obligatorio)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila inferior: Dos tarjetas verticales -->
+    <div class="vertical-cards-container">
+        <div class="card vertical-card">
+            <div class="card-header">
+                <h3>Archivos de Entrada</h3>
+            </div>
+            <div class="card-body">
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label for="mainFile">Archivo Principal (SDM):</label>
+                        <input type="file" id="mainFile" class="file-input" accept=".xml" required>
+                        <label for="mainFile" class="file-label">Seleccionar XML principal</label>
+                        <span class="file-name" id="mainFileName">Ningún archivo seleccionado</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="csfFile">Archivo CSF (Opcional):</label>
+                        <input type="file" id="csfFile" class="file-input" accept=".xml">
+                        <label for="csfFile" class="file-label">Seleccionar CSF</label>
+                        <span class="file-name" id="csfFileName">Ningún archivo seleccionado</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card vertical-card">
+            <div class="card-header">
+                <h3>Configuración</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="languageCode">Idioma:</label>
+                    <input type="text" id="languageCode" class="search-input" value="en-us" required placeholder="ej: en-us, es-mx">
+                    <span class="form-helper">Código de idioma en formato ISO (ej: en-us)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="openCountryModal">Países:</label>
+                    <button type="button" id="openCountryModal" class="btn btn-outline" disabled style="width: 100%;">
+                        Seleccionar Países
+                    </button>
+                    <div class="selection-summary" style="margin-top: var(--spacing-sm);">
+                        <div class="summary-item" style="width: 100%;">
+                            <span id="countryCodeHelper" style="font-size: 12px; color: var(--color-gray-dark);">
+                                Se activará al subir CSF
+                            </span>
+                        </div>
+                        <div class="summary-item" style="width: 100%;">
+                            <span id="selectedCountriesPreview" style="font-size: 13px; color: var(--color-gray-darker); font-weight: 600;">
+                                USA (default)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button type="submit" form="uploadForm" class="btn btn-primary" style="width: 100%;">
+                        Procesar Archivos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tarjeta horizontal superior */
+.horizontal-card {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.horizontal-body {
+    padding: var(--spacing-lg);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+.form-group.horizontal-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Contenedor de tarjetas verticales */
+.vertical-cards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+.vertical-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Asegurar consistencia en alturas */
+.search-input {
+    height: 36px;
+    box-sizing: border-box;
+}
+
+.form-group.horizontal-group label {
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--color-gray-darker);
+}
+
+.form-helper {
+    font-size: 12px;
+    color: var(--color-gray-dark);
+    margin-top: 4px;
+    line-height: 1.3;
+}
+</style>
+
+<!-- Áreas para mostrar estado y resultados -->
+<div id="status" style="display: none;"></div>
+<div id="result" style="display: none;"></div>
+
+<!-- Modal para selección de países -->
+<div id="countryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Seleccionar Países</h3>
+            <button type="button" class="modal-close" id="closeCountryModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <input type="text"
+                       id="countrySearch"
+                       class="search-input"
+                       placeholder="Buscar países..."
+                       style="margin-bottom: var(--spacing-md);">
+            </div>
+
+            <div class="selection-summary" style="align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                <div class="summary-item">
+                    <button type="button" id="selectAllCountries" class="btn btn-secondary">
+                        Todos
+                    </button>
+                    <button type="button" id="deselectAllCountries" class="btn btn-secondary">
+                        Ninguno
+                    </button>
+                </div>
+                <div class="badge" id="selectedCountriesCount">
+                    1 seleccionado
+                </div>
+            </div>
+
+            <div class="checkbox-group" id="countryCheckboxes">
+                <!-- Los checkboxes se insertan dinámicamente aquí -->
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelCountrySelection">
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmCountrySelection">
+                Confirmar Selección
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/upload.js') }}"></script>
+{% endblock %}
